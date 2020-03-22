@@ -132,7 +132,7 @@ class ModelItem(db.Model):
 
     def as_dict(self):
         ret = {x.name: getattr(self, x.name) for x in self.__table__.columns}
-        ret['created_time'] = self.created_time.strftime('%m-%d %H:%M:%S') 
+        ret['created_time'] = self.created_time.strftime('%Y-%m-%d %H:%M:%S') 
         #ret['start_time'] = self.start_time.strftime('%m-%d %H:%M:%S') if self.start_time is not None else None
         #ret['end_time'] = self.end_time.strftime('%m-%d %H:%M:%S') if self.end_time is not None else None
 

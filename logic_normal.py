@@ -128,6 +128,8 @@ class LogicNormal(object):
 
             if test_flag is False and ModelSetting.get_bool('move_other'):
                 LogicNormal.move_other_movie()
+
+            logger.debug('movie classfier processed')
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
@@ -171,6 +173,8 @@ class LogicNormal(object):
             if time_flag:
                 cr_time = ModelItem.get_last_time()
                 if cr_time is not 0:
+                    logger.debug('time target (%s)', cr_time)
+                    cr_time = cr_time + '.000000'
                     query = 'SELECT * FROM plugin_fileprocess_movie_item where created_time > Datetime("{cr_time}")'.format(cr_time=cr_time)
 
             cur.execute(query)
@@ -254,7 +258,7 @@ class LogicNormal(object):
         try:
             orig_path   = os.path.join(ModelSetting.get('proc_path'), orig, dest_folder_name)
             orig_fpath  = os.path.join(orig_path, fname)
-            orig_path   = os.path.join(ModelSetting.get('post_path'), dest)
+            dest_path   = os.path.join(ModelSetting.get('post_path'), dest)
 
             if orig_path in LogicNormal.moved_queue:
                 logger.debug('already moved file(%s)', orig_fpath)
@@ -276,14 +280,15 @@ class LogicNormal(object):
         try:
             for target in LogicNormal.dirs:
                 orig_path   = os.path.join(ModelSetting.get('proc_path'), target)
-    
-                if os.path.isdir(orig_path) is False: 
+                logger.debug('move other movie: from(%s) to(%s)', orig_path, ModelSetting.get('post_path'))
+
+                if os.path.isdir(orig_path) is False:
                     logger.info('not exist orig_dir(%s)', orig_path)
                     continue
                 for dname in os.listdir(orig_path):
                     orig = os.path.join(orig_path, dname)
                     dest = os.path.join(ModelSetting.get['post_path'], target)
-    
+
                     logger.debug('move movie orig(%s) > dest(%s)', orig, dest)
                     move_dir(orig, dest)
         except Exception as e:
