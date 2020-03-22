@@ -28,7 +28,6 @@ from .logic_normal import LogicNormal
 class Logic(object):
     db_default = {
         'db_version' : '1',
-        'schedulerInterval' : '10',
         'auto_start' : 'False',
         'interval' : '10',
         'proc_path' : '',
@@ -47,7 +46,7 @@ class Logic(object):
                 if db.session.query(ModelSetting).filter_by(key=key).count() == 0:
                     db.session.add(ModelSetting(key, value))
             db.session.commit()
-        except Exception as e: 
+        except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
 
@@ -74,7 +73,7 @@ class Logic(object):
     def plugin_unload():
         try:
             logger.debug('%s plugin_unload', package_name)
-        except Exception as e: 
+        except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
 
@@ -82,9 +81,9 @@ class Logic(object):
     def scheduler_start():
         try:
             logger.debug('%s scheduler_start' % package_name)
-            job = Job(package_name, package_name, ModelSetting.get('schedulerInterval'), Logic.scheduler_function, u"영화분류", False)
+            job = Job(package_name, package_name, ModelSetting.get('interval'), Logic.scheduler_function, u"영화분류", False)
             scheduler.add_job_instance(job)
-        except Exception as e: 
+        except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
 
@@ -93,7 +92,7 @@ class Logic(object):
         try:
             logger.debug('%s scheduler_stop' % package_name)
             scheduler.remove_job(package_name)
-        except Exception as e: 
+        except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
 
@@ -120,7 +119,7 @@ class Logic(object):
             db.session.query(ModelItem).delete()
             db.session.commit()
             return True
-        except Exception as e: 
+        except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
             return False
@@ -155,7 +154,7 @@ class Logic(object):
                     Logic.one_excute()
                 threading.Thread(target=func, args=()).start()
                 ret = 'thread'
-        except Exception as e: 
+        except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
             ret = 'fail'

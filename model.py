@@ -21,7 +21,6 @@ from sqlalchemy import create_engine
 
 app.config['SQLALCHEMY_BINDS'][package_name] = 'sqlite:///%s' % (os.path.join(path_app_root, 'data', 'db', '%s.db' % package_name))
 #########################################################
-        
 class ModelSetting(db.Model):
     __tablename__ = '%s_setting' % package_name
     __table_args__ = {'mysql_collate': 'utf8_general_ci'}
@@ -30,7 +29,7 @@ class ModelSetting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(100), unique=True, nullable=False)
     value = db.Column(db.String, nullable=False)
- 
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -87,7 +86,7 @@ class ModelSetting(db.Model):
             logger.error('Exception:%s %s', e, key)
             logger.error(traceback.format_exc())
 
-    
+
     @staticmethod
     def setting_save(req):
         try:
@@ -169,7 +168,7 @@ class ModelItem(db.Model):
             result = lists[0].as_dict()
             created_time = result['created_time']
             return created_time
-        
+
         return 0
 
     @staticmethod

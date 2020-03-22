@@ -5,7 +5,7 @@ import os
 import traceback
 
 # third-party
-from flask import Blueprint, request, Response, send_file, render_template, redirect, jsonify, session, send_from_directory 
+from flask import Blueprint, request, Response, send_file, render_template, redirect, jsonify, session, send_from_directory
 from flask_socketio import SocketIO, emit, send
 from flask_login import login_user, logout_user, current_user, login_required
 
@@ -18,8 +18,6 @@ from framework import app, db, scheduler, path_data, socketio
 from framework.util import Util
 from system.logic import SystemLogic
 from framework.common.torrent.process import TorrentProcess
-from system.model import ModelSetting as SystemModelSetting
-
 
 # 패키지
 # 로그 
@@ -72,15 +70,13 @@ def home():
 
 @blueprint.route('/<sub>')
 @login_required
-def first_menu(sub): 
+def first_menu(sub):
     logger.debug('DETAIL %s %s', package_name, sub)
     if sub == 'setting':
         arg = ModelSetting.to_dict()
         arg['package_name']  = package_name
         arg['scheduler'] = str(scheduler.is_include(package_name))
         arg['is_running'] = str(scheduler.is_running(package_name))
-        if SystemModelSetting.get_bool('auth_use_apikey'):
-            arg['rss_api'] += '?apikey=%s' % SystemModelSetting.get('auth_apikey')
         return render_template('{package_name}_{sub}.html'.format(package_name=package_name, sub=sub), arg=arg)
     elif sub == 'list':
         arg = {}
