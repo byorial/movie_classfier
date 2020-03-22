@@ -126,7 +126,7 @@ class LogicNormal(object):
                         logger.debug('[%s] movie is not target content(%s)', proc_type, fname, new_target)
                         entity = LogicNormal.save_item(fname, minfo, target, "none", movie_id, "none", True)
 
-            if test_flag is False:
+            if test_flag is False and ModelSetting.get_bool('move_other'):
                 LogicNormal.move_other_movie()
         except Exception as e:
             logger.error('Exception:%s', e)
@@ -157,10 +157,13 @@ class LogicNormal(object):
         try:
             import sqlite3
             db_path = os.path.join(path_data, 'db', 'sjva.db')
-            # connect to read only
-            fd = os.open(db_path, os.O_RDONLY)
-            conn = sqlite3.connect('/dev/fd/%d' % fd)
-            os.close(fd)
+            if platform.system() is 'Linux':
+                # connect to read only for Linux
+                fd = os.open(db_path, os.O_RDONLY)
+                conn = sqlite3.connect('/dev/fd/%d' % fd)
+                os.close(fd)
+            else:
+                conn = sqlite3.connect(db_path)
             cur = conn.cursor()
 
             query = 'SELECT * FROM plugin_fileprocess_movie_item'

@@ -35,6 +35,7 @@ class Logic(object):
         'fname_first' : 'True',
         'fname_rules' : u'201[0-9][.], 2010s',
         'minfo_rules' : u'애니메이션|전체관람가, child',
+        'move_other' : 'True',
     }
     fname_rules = OrderedDict()
     minfo_rules = OrderedDict()
