@@ -287,7 +287,7 @@ class LogicNormal(object):
                     continue
                 for dname in os.listdir(orig_path):
                     orig = os.path.join(orig_path, dname)
-                    dest = os.path.join(ModelSetting.get['post_path'], target)
+                    dest = os.path.join(ModelSetting.get('post_path'), target)
 
                     logger.debug('move movie orig(%s) > dest(%s)', orig, dest)
                     move_dir(orig, dest)
