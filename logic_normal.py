@@ -267,7 +267,7 @@ class LogicNormal(object):
             if os.path.isdir(orig_path):
                 logger.debug('move target movie: orig(%s) > dest(%s)', orig_path, dest_path)
                 if os.path.isdir(dest_path) is False: os.mkdir(dest_path)
-                move_dir(orig_path, dest_path)
+                LogigNormal.move_dir(orig_path, dest_path)
                 LogicNormal.moved_queue.append(orig_path)
             else:
                 logger.info('orig_path not exist(%s)', orig_path)
@@ -290,7 +290,7 @@ class LogicNormal(object):
                     dest = os.path.join(ModelSetting.get('post_path'), target)
 
                     logger.debug('move movie orig(%s) > dest(%s)', orig, dest)
-                    move_dir(orig, dest)
+                    LogigNormal.move_dir(orig, dest)
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
