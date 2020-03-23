@@ -116,10 +116,13 @@ class LogicNormal(object):
 
                 fname_first = ModelSetting.get_bool('fname_first')
                 proc_type_dict = LogicNormal.get_proc_type()
+                dict_len = len(proc_type_dict)
+                curr_idx = 0
                 for proc_type, func in proc_type_dict.items():
                     if proc_type is 'fname': arg = fname
                     else: arg = minfo
                     new_target = func(arg)
+                    curr_idx = curr_idx + 1
 
                     if new_target is not None:
                         logger.debug('[%s] movie is target content(%s) move to (%s)', proc_type, fname, new_target)
@@ -130,8 +133,9 @@ class LogicNormal(object):
                             LogicNormal.move_target_movie(fname, target, dest_folder_name, new_target) 
                         break
                     else:
-                        logger.debug('[%s] movie is not target content(%s)', proc_type, fname, new_target)
-                        entity = LogicNormal.save_item(fname, minfo, target, "none", movie_id, "none", True)
+                        logger.debug('[%s] movie is not target content(%s)', proc_type, fname)
+                        if curr_idx is dict_len:
+                            entity = LogicNormal.save_item(fname, minfo, target, "none", movie_id, "none", True)
 
             logger.debug('END target-movie classfier processed')
             if test_flag is False and ModelSetting.get_bool('move_other'):
