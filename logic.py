@@ -183,7 +183,7 @@ class Logic(object):
             Logic.fname_rules = OrderedDict(list_rules)
             logger.debug(Logic.fname_rules)
 
-            list_rules  = []
+            del list_rules[:]
             str_rules   = ModelSetting.get('minfo_rules')
             if str_rules != '':
                 lines = list(x.strip() for x in str_rules.split('\n'))

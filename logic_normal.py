@@ -273,7 +273,9 @@ class LogicNormal(object):
         try:
             orig_path   = os.path.join(ModelSetting.get('proc_path'), orig, dest_folder_name)
             orig_fpath  = os.path.join(orig_path, fname)
-            dest_path   = os.path.join(ModelSetting.get('post_path'), dest)
+
+            if dest.startswith('/'): dest_path = dest
+            else: dest_path   = os.path.join(ModelSetting.get('post_path'), dest)
 
             if orig_path in LogicNormal.moved_queue:
                 logger.debug('already moved file(%s)', orig_fpath)
@@ -281,7 +283,7 @@ class LogicNormal(object):
 
             if os.path.isdir(orig_path):
                 logger.debug('move target movie: orig(%s) > dest(%s)', orig_path, dest_path)
-                if os.path.isdir(dest_path) is False: os.mkdir(dest_path)
+                if os.path.isdir(dest_path) is False: os.makedirs(dest_path)
                 LogicNormal.move_dir(orig_path, dest_path)
                 LogicNormal.moved_queue.append(orig_path)
             else:
