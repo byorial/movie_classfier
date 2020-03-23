@@ -32,6 +32,7 @@ class Logic(object):
         'interval' : '10',
         'proc_path' : '',
         'post_path' : '',
+        'target_dirs' : u'kor|kor_vod|sub_o|sub_x|vod',
         'fname_first' : 'True',
         'fname_rules' : u'201[0-9][.], 2010s',
         'minfo_rules' : u'애니메이션|전체관람가, child',
@@ -39,6 +40,7 @@ class Logic(object):
     }
     fname_rules = OrderedDict()
     minfo_rules = OrderedDict()
+    target_dirs = list()
 
     @staticmethod
     def db_init():
@@ -62,6 +64,7 @@ class Logic(object):
 
             # 경로규칙 변환
             Logic.load_rules()
+            Logic.load_target_dirs()
             # 편의를 위해 json 파일 생성
             from plugin import plugin_info
             Util.save_from_dict_to_json(plugin_info, os.path.join(os.path.dirname(__file__), 'info.json'))
@@ -143,23 +146,29 @@ class Logic(object):
     @staticmethod
     def one_execute():
         try:
-            if scheduler.is_include(package_name):
-                if scheduler.is_running(package_name):
-                    ret = 'is_running'
-                else:
-                    scheduler.execute_job(package_name)
-                    ret = 'scheduler'
-            else:
-                def func():
-                    #time.sleep(2)
-                    Logic.one_excute()
-                threading.Thread(target=func, args=()).start()
-                ret = 'thread'
+            def func():
+                time.sleep(2)
+                LogicNormal.one_execute()
+
+            threading.Thread(target=func, args=()).start()
+            ret = 'thread'
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
             ret = 'fail'
         return ret
+
+    @staticmethod
+    def load_target_dirs():
+        try:
+            str_dirs = ModelSetting.get('target_dirs')
+            Logic.target_dirs = [x.strip() for x in str_dirs.split('|')]
+            logger.debug(Logic.target_dirs)
+
+        except Exception as e:
+            logger.error('Exception:%s', e)
+            logger.error(traceback.format_exc())
+            ret = 'fail'
 
     @staticmethod
     def load_rules():

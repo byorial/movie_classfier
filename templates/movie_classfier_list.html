@@ -29,7 +29,7 @@
   {{ macros.m_hr_head_top() }}
   {{ macros.m_row_start('0') }}
   {{ macros.m_col(2, macros.m_strong('Created Time')) }}
-  {{ macros.m_col(6, macros.m_strong('FileName')) }}
+  {{ macros.m_col(6, macros.m_strong('FileName/MovieInfo')) }}
   {{ macros.m_col(2, macros.m_strong('MatchType')) }}
   {{ macros.m_col(2, macros.m_strong('MovePath')) }}
   {{ macros.m_row_end() }}
@@ -95,11 +95,16 @@ function make_list(data) {
   for (i in data) {
     str += m_row_start();
     str += m_col(2, data[i].created_time);
-    str += m_col(6, data[i].fname);
-    tmp =  data[i].match_type + '<br>' + data[i].movie_info;
-    str += m_col(2, tmp);
+    tmp = data[i].fname + '<br>' + data[i].movie_info;
+    str += m_col(6, tmp);
+    str += m_col(2, data[i].match_type);
+    tmp = data[i].orig_target;
     if (data[i].match_type == 'none') {
-      tmp = data[i].orig_target + '-&gt;' + data[i].orig_target;
+      if (data[i].is_moved == '0') {
+        tmp += '-&gt; 이동안함';
+      } else {
+        tmp += '-&gt;' + data[i].orig_target;
+      }
     } else {
       tmp = data[i].orig_target + '-&gt;' + data[i].dest_target;
     }

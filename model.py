@@ -148,7 +148,7 @@ class ModelItem(db.Model):
             entity.dest_target = unicode(d['dest_target'])
             entity.movie_id = unicode(d['movie_id'])
             entity.match_type = unicode(d['match_type'])
-            entity.is_movied = d['is_movied']
+            entity.is_moved = d['is_moved']
 
             db.session.add(entity)
             db.session.commit()

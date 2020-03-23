@@ -98,6 +98,7 @@ def ajax(sub):
         if sub == 'setting_save':
             ret = ModelSetting.setting_save(request)
             Logic.load_rules()
+            Logic.load_target_dirs()
             return jsonify(ret)
         elif sub == 'scheduler':
             go = request.form['scheduler']

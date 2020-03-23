@@ -62,7 +62,7 @@ class LogicNormal(object):
 
     @staticmethod
     def task(time_flag, test_flag):
-        logger.debug('%s STARTED', __name__)
+        logger.debug('%s STARTED (time_flag: %s, test_flag:%s)', __name__, str(time_flag), str(test_flag))
         del LogicNormal.moved_queue[:]
         try:
             movie_list = LogicNormal.get_movie_items(time_flag)
@@ -71,15 +71,16 @@ class LogicNormal(object):
                 return 'Success'
             logger.debug('get movie items(%d)', len(movie_list))
             LogicNormal.movie_classfy(movie_list, test_flag)
-            if test_flag: return 'Success'
+            return 'Success'
 
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
-            if test_flag: return "Failed"
+            return "Failed"
 
     @staticmethod
     def movie_classfy(movie_list, test_flag):
+        from .logic import Logic
         try:
             for movie in movie_list:
                 cr_time         = movie[1]
@@ -107,6 +108,12 @@ class LogicNormal(object):
                 logger.debug('dstfolder: %s' % dest_folder_name)
                 logger.debug('---------------------------------------------------------')
 
+                # 이동대상 타겟인지 확인하여 타겟이 아닌 경우 처리결과에만 저장 하고 스킵 처리
+                if target not in Logic.target_dirs:
+                    logger.info('not target content(target: %s)', target)
+                    entity = LogicNormal.save_item(fname, minfo, target, 'none', movie_id, 'none', False)
+                    continue
+
                 fname_first = ModelSetting.get_bool('fname_first')
                 proc_type_dict = LogicNormal.get_proc_type()
                 for proc_type, func in proc_type_dict.items():
@@ -126,10 +133,13 @@ class LogicNormal(object):
                         logger.debug('[%s] movie is not target content(%s)', proc_type, fname, new_target)
                         entity = LogicNormal.save_item(fname, minfo, target, "none", movie_id, "none", True)
 
+            logger.debug('END target-movie classfier processed')
             if test_flag is False and ModelSetting.get_bool('move_other'):
+                logger.debug('START non-targeted movie move')
                 LogicNormal.move_other_movie()
+                logger.debug('END non-targeted movie is moved')
 
-            logger.debug('movie classfier processed')
+            logger.debug('END movie classfier processed')
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
@@ -144,7 +154,8 @@ class LogicNormal(object):
         entity['dest_target'] = dest_target
         entity['movie_id'] = movie_id
         entity['match_type'] = match_type
-        entity['is_movied'] = is_moved
+        if is_moved: entity['is_moved'] = 1
+        else: entity['is_moved'] = 0
         ModelItem.save_as_dict(entity)
         return entity
 
@@ -278,7 +289,8 @@ class LogicNormal(object):
     @staticmethod
     def move_other_movie():
         try:
-            for target in LogicNormal.dirs:
+            from .logic import Logic
+            for target in Logic.target_dirs:
                 orig_path   = os.path.join(ModelSetting.get('proc_path'), target)
                 logger.debug('move other movie: from(%s) to(%s)', orig_path, ModelSetting.get('post_path'))
 
