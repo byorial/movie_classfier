@@ -90,7 +90,7 @@ class LogicNormal(object):
                 dest_folder_name= movie[7].encode('utf-8')
                 movie_id        = movie[9]
 
-                if dest_folder_name is '' or movie_id is None:
+                if dest_folder_name is '' or movie_id is None or movie[12] is None:
                     logger.debug('no movie!! skip(fname:%s)', fname)
                     continue
 
