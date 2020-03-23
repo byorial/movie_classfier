@@ -175,15 +175,20 @@ class Logic(object):
         try:
             list_rules  = []
             str_rules   = ModelSetting.get('fname_rules')
-            lines = list(x.strip() for x in str_rules.split('\n'))
-            for line in lines: list_rules.append(tuple(x.strip() for x in line.split(',')))
+
+            if str_rules != '':
+                lines = list(x.strip() for x in str_rules.split('\n'))
+                for line in lines: list_rules.append(tuple(x.strip() for x in line.split(',')))
+
             Logic.fname_rules = OrderedDict(list_rules)
             logger.debug(Logic.fname_rules)
 
             list_rules  = []
             str_rules   = ModelSetting.get('minfo_rules')
-            lines = list(x.strip() for x in str_rules.split('\n'))
-            for line in lines: list_rules.append(tuple(x.strip() for x in line.split(',')))
+            if str_rules != '':
+                lines = list(x.strip() for x in str_rules.split('\n'))
+                for line in lines: list_rules.append(tuple(x.strip() for x in line.split(',')))
+
             Logic.minfo_rules = OrderedDict(list_rules)
             logger.debug(Logic.minfo_rules)
 

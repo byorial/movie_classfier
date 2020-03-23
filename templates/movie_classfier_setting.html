@@ -21,8 +21,8 @@
       {{ macros.setting_checkbox('move_other', '매칭안된 파일 이동 여부', value=arg['move_other'], desc=['파일명이나 정보로 매칭되지 않은 파일을 이동할지 여부', 'On: 이동, Off: 이동하지 않음']) }}
       {{ macros.setting_input_text('target_dirs', '이동대상 target', value=arg['target_dirs'], desc=['파일이동시킬 대상 target지정, 구분자 |', '지원: kor|kor_vod|sub_o|sub_x|imdb|no_movie']) }}
       {{ macros.setting_checkbox('fname_first', '처리우선순위', value=arg['fname_first'], desc=['On : 파일명 처리 후 영화정보 처리.', 'Off : 영화정보 기반 처리 후 파일명 처리']) }}
-      {{ macros.setting_input_textarea('fname_rules', '파일명 처리 기준', desc=['형식: 조건, 이동폴더명', '조건내구분자(|), 여러조건 입력시 구분자는 Enter'], value=arg['fname_rules'], row='8') }}
-      {{ macros.setting_input_textarea('minfo_rules', '영화정보 처리 기준', desc=['형식: 조건, 이동폴더명', '조건내구분자 (|), 여러조건 입력시 구분자 Enter'], value=arg['minfo_rules'], row='8') }}
+      {{ macros.setting_input_textarea('fname_rules', '파일명 처리 기준', desc=['형식: 조건, 이동폴더명, 비어있는 경우 검사하지 않음', '조건내구분자(|), 여러조건 입력시 구분자는 Enter'], value=arg['fname_rules'], row='8') }}
+      {{ macros.setting_input_textarea('minfo_rules', '영화정보 처리 기준', desc=['형식: 조건, 이동폴더명, 비어있는 경우 검사하지 않음', '조건내구분자 (|), 여러조건 입력시 구분자 Enter'], value=arg['minfo_rules'], row='8') }}
       {{ macros.setting_button_with_info([['fname_sample', '파일명 샘플'], ['minfo_sample', '영화정보샘플'], ['test_btn', '테스트실행']], left='처리기준샘플보기', desc=['각 처리 기준 설정의 샘플을 보여줍니다.', '테스트실행시 실제 파일을 이동시키지 않음'])}}
       {{ macros.setting_button([['global_reset_db_btn', '목록 초기화']], left='DB정리' ) }}
       {{ macros.setting_button([['global_one_execute_btn', '1회 실행']], left='1회 실행', desc='1회실행시 파일이동됨, 시간검사하지않음') }}
