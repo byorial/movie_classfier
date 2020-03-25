@@ -46,7 +46,7 @@ menu = {
 }
 
 plugin_info = {
-    'version' : '0.1.0.0',
+    'version' : '0.2.0.0',
     'name' : 'movie_classfier',
     'category_name' : 'fileprocess',
     'developer' : 'orial',
@@ -66,7 +66,7 @@ def plugin_unload():
 #########################################################
 @blueprint.route('/')
 def home():
-    return redirect('/%s/setting' % package_name)
+    return redirect('/%s/list' % package_name)
 
 @blueprint.route('/<sub>')
 @login_required

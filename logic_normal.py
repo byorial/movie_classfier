@@ -139,9 +139,9 @@ class LogicNormal(object):
 
             logger.debug('END target-movie classfier processed')
             if test_flag is False and ModelSetting.get_bool('move_other'):
-                logger.debug('START non-targeted movie move')
+                logger.info('START non-targeted movie move')
                 LogicNormal.move_other_movie()
-                logger.debug('END non-targeted movie is moved')
+                logger.info('END non-targeted movie is moved')
 
             logger.debug('END movie classfier processed')
         except Exception as e:
@@ -214,7 +214,7 @@ class LogicNormal(object):
                 for keyword in keywords.split('|'):
                     gregx = re.compile(keyword, re.I)
                     if gregx.search(fname) is not None:
-                        logger.debug('[target] fname matched (%s:%s)', keyword, fname)
+                        logger.info('[target] fname matched (%s:%s)', keyword, fname)
                         return rules[keywords].encode('utf-8')
                     else:
                         logger.debug('[target] fname not matched (%s:%s)', keyword, fname)
@@ -237,7 +237,7 @@ class LogicNormal(object):
                 for keyword in enckeywords.split('|'):
                     gregx = re.compile(keyword, re.I)
                     if gregx.search(info) is not None:
-                        logger.debug('[target] minfo matched (%s:%s)', keyword, info)
+                        logger.info('[target] minfo matched (%s:%s)', keyword, info)
                         found = True
                         target = rules[keywords].encode('utf-8')
                     else:
@@ -257,12 +257,35 @@ class LogicNormal(object):
         import shutil
         try:
             new_dest = os.path.join(dest, orig[orig.rfind('/') + 1:])
+            # 이동할 위치에 대상 폴더가 존재하는 경우 파일단위로 이동시킴
             if os.path.isdir(new_dest):
                 for item in os.listdir(orig):
-                    new_orig = os.path.join(orig, item)
-                    logger.debug('movie file: orig(%s) > dest(%s)', new_orig, new_dest)
-                    shutil.move(new_orig, new_dest)
+                    orig_file = os.path.join(orig, item)
+                    dest_file = os.path.join(new_dest, item)
+                    logger.debug('try to move file: orig(%s) > dest(%s)', orig_file, new_dest)
+
+                    # 이동파일 덮어쓰기 On 인경우
+                    if ModelSetting.get_bool('overwrite'):
+                        if os.path.isfile(dest_file):
+                            logger.debug('overwrite file: orig(%s) > dest(%s)', orig_file, dest_file)
+                            shutil.move(orig_file, dest_file)
+                        else:
+                            logger.debug('move file: orig(%s) > dest(%s)', orig_file, new_dest)
+                            shutil.move(orig_file, new_dest)
+                    # 이동파일 덮어쓰기 Off 인경우
+                    else:
+                        # 대상폴더에 같은 파일이 있으면 SKIP: 아무것도 안함
+                        if os.path.isfile(dest_file):
+                            logger.debug('skip move: dest file already exist: dest(%s)', dest_file)
+                        else:
+                            logger.debug('move file: orig(%s) > dest(%s)', orig_file, new_dest)
+                            shutil.move(orig_file, new_dest)
+                # 파일단위로 이동완료 후 원본 폴더 삭제처리
+                logger.debug('remove orig dir(%s)', orig)
+                os.rmdir(orig)
             else:
+                # 폴더 단위로 이동
+                logger.debug('movie file: orig(%s) > dest(%s)', orig, dest)
                 shutil.move(orig, dest)
         except Exception as e:
             logger.error('Exception:%s', e)
@@ -287,7 +310,7 @@ class LogicNormal(object):
                 LogicNormal.move_dir(orig_path, dest_path)
                 LogicNormal.moved_queue.append(orig_path)
             else:
-                logger.info('orig_path not exist(%s)', orig_path)
+                logger.warning('orig_path not exist(%s)', orig_path)
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
@@ -301,7 +324,7 @@ class LogicNormal(object):
                 logger.debug('move other movie: from(%s) to(%s)', orig_path, ModelSetting.get('post_path'))
 
                 if os.path.isdir(orig_path) is False:
-                    logger.info('not exist orig_dir(%s)', orig_path)
+                    logger.warning('not exist orig_dir(%s)', orig_path)
                     continue
                 for dname in os.listdir(orig_path):
                     orig = os.path.join(orig_path, dname)
