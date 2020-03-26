@@ -48,35 +48,49 @@ class LogicNormal(object):
     dirs = ['kor', 'kor_vod', 'vod', 'sub_x', 'sub_o', 'imdb', 'no_movie']
 
     @staticmethod
-    @celery.task
     def scheduler_function():
-        return LogicNormal.task(True, False)
+        if app.config['config']['use_celery']:
+            result = LogicNormal.task.apply_async((True, False,))
+            result.get()
+        else:
+            LogicNormal.task(True, False)
 
     @staticmethod
     def one_execute():
-        return LogicNormal.task(False, False)
-
+        if app.config['config']['use_celery']:
+            result = LogicNormal.task_one.apply_async((False, False,))
+            result.get()
+        else:
+            LogicNormal.task(False, False)
+            
     @staticmethod
     def test():
-        return LogicNormal.task(False, True)
+        if app.config['config']['use_celery']:
+            result = LogicNormal.task_test.apply_async((False, True,))
+            result.get()
+        else:
+            LogicNormal.task(False, True)
 
     @staticmethod
-    def task(time_flag, test_flag):
+    @celery.task(bind=True)
+    def task(self, *flag):
+        time_flag = flag[0]
+        test_flag = flag[1]
         logger.debug('%s STARTED (time_flag: %s, test_flag:%s)', __name__, str(time_flag), str(test_flag))
+        
         del LogicNormal.moved_queue[:]
         try:
             movie_list = LogicNormal.get_movie_items(time_flag)
             if movie_list is None or len(movie_list) is 0:
                 logger.debug('no movie to move')
-                return 'Success'
-            logger.debug('get movie items(%d)', len(movie_list))
-            LogicNormal.movie_classfy(movie_list, test_flag)
-            return 'Success'
+            else:
+                logger.debug('get movie items(%d)', len(movie_list))
+                LogicNormal.movie_classfy(movie_list, test_flag)
 
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
-            return "Failed"
+            return False
 
     @staticmethod
     def movie_classfy(movie_list, test_flag):

@@ -105,13 +105,8 @@ class Logic(object):
     @staticmethod
     def scheduler_function():
         try:
-            #LogicNormal.scheduler_function()
-            from framework import app
-            if app.config['config']['use_celery']:
-                result = LogicNormal.scheduler_function.apply_async()
-                result.get()
-            else:
-                LogicNormal.scheduler_function()
+            LogicNormal.scheduler_function()
+
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
@@ -152,7 +147,22 @@ class Logic(object):
                 LogicNormal.one_execute()
 
             threading.Thread(target=func, args=()).start()
-            ret = 'thread'
+            ret = 'thread for one execute assigned'
+        except Exception as e:
+            logger.error('Exception:%s', e)
+            logger.error(traceback.format_exc())
+            ret = 'fail'
+        return ret
+
+    @staticmethod
+    def test():
+        try:
+            def func():
+                time.sleep(2)
+                LogicNormal.test()
+
+            threading.Thread(target=func, args=()).start()
+            ret = 'thread for test execute assigned'
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())

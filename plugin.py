@@ -46,7 +46,7 @@ menu = {
 }
 
 plugin_info = {
-    'version' : '0.2.1.0',
+    'version' : '0.3.0.0',
     'name' : 'movie_classfier',
     'category_name' : 'fileprocess',
     'developer' : 'orial',
@@ -112,7 +112,7 @@ def ajax(sub):
             ret = Logic.one_execute()
             return jsonify(ret)
         elif sub == 'test':
-            ret = LogicNormal.test()
+            ret = Logic.test()
             return jsonify(ret)
         elif sub == 'reset_db':
             ret = Logic.reset_db()
