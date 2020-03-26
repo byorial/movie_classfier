@@ -82,6 +82,11 @@ class LogicNormal(object):
     def movie_classfy(movie_list, test_flag):
         from .logic import Logic
         try:
+            if ModelSetting.get('target_dirs') == u'' or ModelSetting.get('proc_path') == u'' \
+                    or ModelSetting.get('post_path') == u'':
+                logger.warning('path setting is empty, please set pathes and target_dirs')
+                return
+
             for movie in movie_list:
                 cr_time         = movie[1]
                 fname           = movie[2].encode('utf-8')
