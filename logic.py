@@ -35,9 +35,9 @@ class Logic(object):
         'target_dirs' : u'kor|kor_vod|sub_o|sub_x|vod',
         'fname_first' : 'True',
         'fname_rules' : u'201[0-9][.], 2010s',
-        'minfo_rules' : u'애니메이션|전체관람가, child',
+        'minfo_rules' : u'애니메이션&전체관람가, child',
+        'overwrite' : 'False',
         'move_other' : 'True',
-        'oerwrite' : 'False',
     }
     fname_rules = OrderedDict()
     minfo_rules = OrderedDict()

@@ -209,15 +209,23 @@ class LogicNormal(object):
             rules = Logic.fname_rules
 
             for keywords in rules.keys():
-                found = False
+                enckeywords = keywords.encode('utf-8')
+                for keyword in enckeywords.split('|'):
+                    found = False
+                    for akeyword in keyword.split('&'):
+                        gregx = re.compile(akeyword, re.I)
+                        if gregx.search(fname) is None:
+                            found = False
+                            break
+                        else: found = True
 
-                for keyword in keywords.split('|'):
-                    gregx = re.compile(keyword, re.I)
-                    if gregx.search(fname) is not None:
+                    if found is True:
                         logger.info('[target] fname matched (%s:%s)', keyword, fname)
                         return rules[keywords].encode('utf-8')
                     else:
                         logger.debug('[target] fname not matched (%s:%s)', keyword, fname)
+
+            return None
 
         except Exception as e:
             logger.error('Exception:%s', e)
@@ -232,20 +240,22 @@ class LogicNormal(object):
 
             for keywords in rules.keys():
                 enckeywords = keywords.encode('utf-8')
-                found = False
-
                 for keyword in enckeywords.split('|'):
-                    gregx = re.compile(keyword, re.I)
-                    if gregx.search(info) is not None:
+                    found = False
+                    for akeyword in keyword.split('&'):
+                        gregx = re.compile(akeyword, re.I)
+                        if gregx.search(info) is None:
+                            found = False
+                            break
+                        else: found = True
+
+                    if found is True:
                         logger.info('[target] minfo matched (%s:%s)', keyword, info)
-                        found = True
-                        target = rules[keywords].encode('utf-8')
+                        return rules[keywords].encode('utf-8')
                     else:
                         logger.debug('[target] minfo not matched (%s:%s)', keywords, info)
-                        found = False
-                        break
 
-                if found is True: return target
+            return None
 
         except Exception as e:
             logger.error('Exception:%s', e)
