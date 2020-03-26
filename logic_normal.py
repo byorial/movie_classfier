@@ -100,6 +100,8 @@ class LogicNormal(object):
                     or ModelSetting.get('post_path') == u'':
                 logger.warning('path setting is empty, please set pathes and target_dirs')
                 return
+            # for celery
+            Logic.load_target_dirs()
 
             for movie in movie_list:
                 cr_time         = movie[1]
