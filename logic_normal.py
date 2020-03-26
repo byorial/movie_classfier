@@ -50,7 +50,7 @@ class LogicNormal(object):
     @staticmethod
     def scheduler_function():
         if app.config['config']['use_celery']:
-            result = LogicNormal.task.apply_async((True, False,))
+            result = LogicNormal.task.apply_async((True, False))
             result.get()
         else:
             LogicNormal.task(True, False)
@@ -58,7 +58,7 @@ class LogicNormal(object):
     @staticmethod
     def one_execute():
         if app.config['config']['use_celery']:
-            result = LogicNormal.task.apply_async((False, False,))
+            result = LogicNormal.task.apply_async((False, False))
             result.get()
         else:
             LogicNormal.task(False, False)
@@ -66,7 +66,7 @@ class LogicNormal(object):
     @staticmethod
     def test():
         if app.config['config']['use_celery']:
-            result = LogicNormal.task.apply_async((False, True,))
+            result = LogicNormal.task.apply_async((False, True))
             result.get()
         else:
             LogicNormal.task(False, True)
