@@ -142,12 +142,20 @@ class Logic(object):
     @staticmethod
     def one_execute():
         try:
-            def func():
-                time.sleep(2)
-                LogicNormal.one_execute()
+            if scheduler.is_include(package_name):
+                if scheduler.is_running(package_name):
+                    ret = 'is_running'
+                else:
+                    scheduler.execute_job(package_name)
+                    ret = 'scheduler'
+            else:
+                def func():
+                    time.sleep(2)
+                    LogicNormal.one_excute()
 
-            threading.Thread(target=func, args=()).start()
-            ret = 'thread for one execute assigned'
+                threading.Thread(target=func, args=()).start()
+                ret = 'thread'
+
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())

@@ -23,6 +23,7 @@ import platform
 
 # sjva 공용
 from framework import app, db, scheduler, path_app_root, path_data, celery
+import framework.common.celery as celery_shutil
 from framework.job import Job
 from framework.util import Util
 
@@ -45,37 +46,21 @@ class LogicNormal(object):
     session = requests.Session()
     driver = None
     moved_queue = list()
-    dirs = ['kor', 'kor_vod', 'vod', 'sub_x', 'sub_o', 'imdb', 'no_movie']
 
     @staticmethod
     def scheduler_function():
-        if app.config['config']['use_celery']:
-            result = LogicNormal.task.apply_async((True, False))
-            result.get()
-        else:
-            LogicNormal.task(True, False)
+        LogicNormal.task(True, False)
 
     @staticmethod
     def one_execute():
-        if app.config['config']['use_celery']:
-            result = LogicNormal.task.apply_async((False, False))
-            result.get()
-        else:
-            LogicNormal.task(False, False)
+        LogicNormal.task(False, False)
             
     @staticmethod
     def test():
-        if app.config['config']['use_celery']:
-            result = LogicNormal.task.apply_async((False, True))
-            result.get()
-        else:
-            LogicNormal.task(False, True)
+        LogicNormal.task(False, True)
 
     @staticmethod
-    @celery.task(bind=True)
-    def task(self, *flag):
-        time_flag = flag[0]
-        test_flag = flag[1]
+    def task(time_flag, test_flag):
         logger.debug('%s STARTED (time_flag: %s, test_flag:%s)', __name__, str(time_flag), str(test_flag))
         
         del LogicNormal.moved_queue[:]
@@ -165,9 +150,11 @@ class LogicNormal(object):
                 logger.info('END non-targeted movie is moved')
 
             logger.debug('END movie classfier processed')
+            return 'Sucess'
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
+            return 'Error'
 
     @staticmethod
     def save_item(fname, movie_info, orig_target, dest_target, movie_id, match_type, is_moved):
@@ -285,7 +272,6 @@ class LogicNormal(object):
 
     @staticmethod
     def move_dir(orig, dest):
-        import shutil
         try:
             new_dest = os.path.join(dest, orig[orig.rfind('/') + 1:])
             # 이동할 위치에 대상 폴더가 존재하는 경우 파일단위로 이동시킴
@@ -299,10 +285,10 @@ class LogicNormal(object):
                     if ModelSetting.get_bool('overwrite'):
                         if os.path.isfile(dest_file):
                             logger.debug('overwrite file: orig(%s) > dest(%s)', orig_file, dest_file)
-                            shutil.move(orig_file, dest_file)
+                            celery_shutil.move(orig_file, dest_file)
                         else:
                             logger.debug('move file: orig(%s) > dest(%s)', orig_file, new_dest)
-                            shutil.move(orig_file, new_dest)
+                            celery_shutil.move(orig_file, new_dest)
                     # 이동파일 덮어쓰기 Off 인경우
                     else:
                         # 대상폴더에 같은 파일이 있으면 SKIP: 아무것도 안함
@@ -310,14 +296,14 @@ class LogicNormal(object):
                             logger.debug('skip move: dest file already exist: dest(%s)', dest_file)
                         else:
                             logger.debug('move file: orig(%s) > dest(%s)', orig_file, new_dest)
-                            shutil.move(orig_file, new_dest)
+                            celery_shutil.move(orig_file, new_dest)
                 # 파일단위로 이동완료 후 원본 폴더 삭제처리
                 logger.debug('remove orig dir(%s)', orig)
                 os.rmdir(orig)
             else:
                 # 폴더 단위로 이동
                 logger.debug('movie file: orig(%s) > dest(%s)', orig, dest)
-                shutil.move(orig, dest)
+                celery_shutil.move(orig, dest)
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
