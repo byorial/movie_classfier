@@ -272,7 +272,17 @@ class LogicNormal(object):
 
     @staticmethod
     def move_dir(orig, dest):
+        sample_dirs = ['Featurettes', 'featurettes', 'extra', 'extras', 'Extra', 'Extras', 'sample', 'samples', 'Sample', 'Samples']
         try:
+            # remove sample/featurettes files
+            if ModelSetting.get_bool('remove_sample'):
+                for dname in sample_dirs:
+                    rmpath = os.path.join(orig, dname)
+
+                    if os.path.isdir(rmpath):
+                        logger.debug('remove sample dir: path(%s)', rmpath)
+                        celery_shutil.rmtree(rmpath)
+
             new_dest = os.path.join(dest, orig[orig.rfind('/') + 1:])
             # 이동할 위치에 대상 폴더가 존재하는 경우 파일단위로 이동시킴
             if os.path.isdir(new_dest):
@@ -343,6 +353,7 @@ class LogicNormal(object):
                 if os.path.isdir(orig_path) is False:
                     logger.warning('not exist orig_dir(%s)', orig_path)
                     continue
+
                 for dname in os.listdir(orig_path):
                     orig = os.path.join(orig_path, dname)
                     dest = os.path.join(ModelSetting.get('post_path'), target)

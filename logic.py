@@ -38,6 +38,7 @@ class Logic(object):
         'minfo_rules' : u'애니메이션&전체관람가, child',
         'overwrite' : 'False',
         'move_other' : 'True',
+        'remove_sample' : 'False',
     }
     fname_rules = OrderedDict()
     minfo_rules = OrderedDict()

@@ -46,7 +46,7 @@ menu = {
 }
 
 plugin_info = {
-    'version' : '0.3.0.0',
+    'version' : '0.3.1.0',
     'name' : 'movie_classfier',
     'category_name' : 'fileprocess',
     'developer' : 'orial',
