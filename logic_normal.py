@@ -375,6 +375,7 @@ class LogicNormal(object):
     @staticmethod
     def get_video_fname(fpath):
         try:
+            logger.debug('get_video_path: fpath(%s)', fpath)
             if os.path.isdir(fpath):
                 for f in os.listdir(fpath):
                     if os.path.isfile(os.path.join(fpath, f)) is False:
