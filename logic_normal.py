@@ -127,7 +127,7 @@ class LogicNormal(object):
                 for proc_type, func in proc_type_dict.items():
                     if proc_type is 'fname': 
                         # fname이 폴더인 경우 파일명 매칭을 위해 영상파일 찾기
-                        if is_file == '0':
+                        if is_file == 0:
                             arg = LogicNormal.get_video_fname(os.path.join(ModelSetting.get('proc_path'), target, dest_folder_name))
                             if arg is None: arg = fname
                         else:
@@ -375,12 +375,13 @@ class LogicNormal(object):
     @staticmethod
     def get_video_fname(fpath):
         try:
-            logger.debug('get_video_path: fpath(%s)', fpath)
+            logger.debug('get_video_path for fpath(%s)', fpath)
             if os.path.isdir(fpath):
                 for f in os.listdir(fpath):
                     if os.path.isfile(os.path.join(fpath, f)) is False:
                         continue
                     if os.path.splitext(f)[1] in ['.mkv', '.avi', '.mp4', '.wmv', '.ts']:
+                        logger.debug('override fname(%s)', f)
                         return f
             return None
 
