@@ -125,8 +125,16 @@ class LogicNormal(object):
                 dict_len = len(proc_type_dict)
                 curr_idx = 0
                 for proc_type, func in proc_type_dict.items():
-                    if proc_type is 'fname': arg = fname
-                    else: arg = minfo
+                    if proc_type is 'fname': 
+                        # fname이 폴더인 경우 파일명 매칭을 위해 영상파일 찾기
+                        if is_file == '0':
+                            arg = LogicNormal.get_video_fname(os.path.join(ModelSetting.get('proc_path'), target, dest_folder_name))
+                            if arg is None: arg = fname
+                        else:
+                            arg = fname
+                    else: 
+                        arg = minfo
+
                     new_target = func(arg)
                     curr_idx = curr_idx + 1
 
@@ -363,6 +371,23 @@ class LogicNormal(object):
         except Exception as e:
             logger.error('Exception:%s', e)
             logger.error(traceback.format_exc())
+
+    @staticmethod
+    def get_video_fname(fpath):
+        try:
+            if os.path.isdir(fpath):
+                for f in os.listdir(fpath):
+                    if os.path.isfile(os.path.join(fpath, f)) is False:
+                        continue
+                    if os.path.splitext(f)[1] in ['.mkv', '.avi', '.mp4', '.wmv', '.ts']:
+                        return f
+            return None
+
+        except Exception as e:
+            logger.error('Exception:%s', e)
+            logger.error(traceback.format_exc())
+            return None
+
 
     @staticmethod
     def get_html(url, referer=None, stream=False):
