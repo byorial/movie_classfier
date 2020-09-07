@@ -189,7 +189,7 @@ class LogicNormal(object):
     def get_movie_items(time_flag):
         try:
             import sqlite3
-            db_path = os.path.join(path_data, 'db', 'sjva.db')
+            db_path = os.path.join(path_data, 'db', 'fileprocess_movie.db')
             if platform.system() is 'Linux':
                 # connect to read only for Linux
                 fd = os.open(db_path, os.O_RDONLY)
@@ -199,14 +199,14 @@ class LogicNormal(object):
                 conn = sqlite3.connect(db_path)
             cur = conn.cursor()
 
-            query = 'SELECT * FROM plugin_fileprocess_movie_item'
+            query = 'SELECT * FROM fileprocess_movie_item'
 
             if time_flag:
                 cr_time = ModelItem.get_last_time()
                 if cr_time is not 0:
                     logger.debug('time target (%s)', cr_time)
                     cr_time = cr_time + '.000000'
-                    query = 'SELECT * FROM plugin_fileprocess_movie_item where created_time > Datetime("{cr_time}")'.format(cr_time=cr_time)
+                    query = 'SELECT * FROM fileprocess_movie_item where created_time > Datetime("{cr_time}")'.format(cr_time=cr_time)
 
             cur.execute(query)
             mlist = cur.fetchall()
