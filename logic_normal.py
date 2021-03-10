@@ -341,6 +341,9 @@ class LogicNormal(object):
 
             if os.path.isdir(orig_path):
                 logger.debug('move target movie: orig(%s) > dest(%s)', orig_path, dest_path)
+                if not os.listdir(orig_path):
+                    logger.debug('move skipped: orig dir is empty(%s)', orig_path)
+                    continue
                 if os.path.isdir(dest_path) is False: os.makedirs(dest_path)
                 LogicNormal.move_dir(orig_path, dest_path)
                 LogicNormal.moved_queue.append(orig_path)
