@@ -11,7 +11,7 @@ from sqlalchemy import or_, and_, func, not_, desc
 from sqlalchemy.orm import backref
 
 # sjva 공용
-from framework import app, db, path_app_root
+from framework import app, db, path_app_root, py_unicode
 from framework.util import Util
 
 # 패키지 
@@ -129,6 +129,10 @@ class ModelItem(db.Model):
     def __repr__(self):
         return repr(self.as_dict())
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
     def as_dict(self):
         ret = {x.name: getattr(self, x.name) for x in self.__table__.columns}
         ret['created_time'] = self.created_time.strftime('%Y-%m-%d %H:%M:%S') 
@@ -141,12 +145,12 @@ class ModelItem(db.Model):
     def save_as_dict(d):
         try:
             entity = ModelItem()
-            entity.fname = unicode(d['fname'])
-            entity.movie_info = unicode(d['movie_info'])
-            entity.orig_target = unicode(d['orig_target'])
-            entity.dest_target = unicode(d['dest_target'])
-            entity.movie_id = unicode(d['movie_id'])
-            entity.match_type = unicode(d['match_type'])
+            entity.fname = py_unicode(d['fname'])
+            entity.movie_info = py_unicode(d['movie_info'])
+            entity.orig_target = py_unicode(d['orig_target'])
+            entity.dest_target = py_unicode(d['dest_target'])
+            entity.movie_id = py_unicode(d['movie_id'])
+            entity.match_type = py_unicode(d['match_type'])
             entity.is_moved = d['is_moved']
 
             db.session.add(entity)

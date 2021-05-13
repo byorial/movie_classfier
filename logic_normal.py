@@ -22,7 +22,7 @@ import platform
 
 
 # sjva 공용
-from framework import app, db, scheduler, path_app_root, path_data, celery
+from framework import app, db, scheduler, path_app_root, path_data, celery, py_unicode
 import framework.common.celery as celery_shutil
 from framework.job import Job
 from framework.util import Util
@@ -90,17 +90,21 @@ class LogicNormal(object):
 
             for movie in movie_list:
                 cr_time         = movie[1]
-                fname           = movie[2].encode('utf-8')
+                #fname           = movie[2].encode('utf-8')
+                fname           = movie[2]
                 is_file         = movie[4]
-                target          = movie[6].encode('utf-8')
-                dest_folder_name= movie[7].encode('utf-8')
+                target          = movie[6]
+                dest_folder_name= movie[7]
+                #target          = movie[6].encode('utf-8')
+                #dest_folder_name= movie[7].encode('utf-8')
                 movie_id        = movie[9]
 
                 if dest_folder_name is '' or movie_id is None or movie[12] is None:
                     logger.debug('no movie!! skip(fname:%s)', fname)
                     continue
 
-                minfo           = movie[12].encode('utf-8')
+                #minfo           = movie[12].encode('utf-8')
+                minfo           = movie[12]
 
                 if minfo is None: logger.debug('not found movie info'); continue
 
@@ -166,17 +170,16 @@ class LogicNormal(object):
 
     @staticmethod
     def save_item(fname, movie_info, orig_target, dest_target, movie_id, match_type, is_moved):
-        entity = {}
-        entity['id'] = ''
-        entity['fname'] = fname
-        entity['movie_info'] = movie_info
-        entity['orig_target'] = orig_target
-        entity['dest_target'] = dest_target
-        entity['movie_id'] = movie_id
-        entity['match_type'] = match_type
-        if is_moved: entity['is_moved'] = 1
-        else: entity['is_moved'] = 0
-        ModelItem.save_as_dict(entity)
+        entity = ModelItem()
+        entity.fname = py_unicode(fname)
+        entity.movie_info = py_unicode(movie_info)
+        entity.orig_target = py_unicode(orig_target)
+        entity.dest_target = py_unicode(dest_target)
+        entity.movie_id = movie_id
+        entity.match_type = match_type
+        if is_moved: entity.is_moved = 1
+        else: entity.is_moved = 0
+        entity.save()
         return entity
 
     @staticmethod
@@ -225,8 +228,9 @@ class LogicNormal(object):
             rules = Logic.fname_rules
 
             for keywords in rules.keys():
-                enckeywords = keywords.encode('utf-8')
-                for keyword in enckeywords.split('|'):
+                #enckeywords = keywords.encode('utf-8')
+                #for keyword in enckeywords.split('|'):
+                for keyword in keywords.split('|'):
                     found = False
                     for akeyword in keyword.split('&'):
                         gregx = re.compile(akeyword, re.I)
@@ -237,7 +241,8 @@ class LogicNormal(object):
 
                     if found is True:
                         logger.info('[target] fname matched (%s:%s)', keyword, fname)
-                        return rules[keywords].encode('utf-8')
+                        #return rules[keywords].encode('utf-8')
+                        return rules[keywords]
                     else:
                         logger.debug('[target] fname not matched (%s:%s)', keyword, fname)
 
@@ -255,8 +260,9 @@ class LogicNormal(object):
             rules = Logic.minfo_rules
 
             for keywords in rules.keys():
-                enckeywords = keywords.encode('utf-8')
-                for keyword in enckeywords.split('|'):
+                #enckeywords = keywords.encode('utf-8')
+                #for keyword in enckeywords.split('|'):
+                for keyword in keywords.split('|'):
                     found = False
                     for akeyword in keyword.split('&'):
                         gregx = re.compile(akeyword, re.I)
@@ -267,7 +273,8 @@ class LogicNormal(object):
 
                     if found is True:
                         logger.info('[target] minfo matched (%s:%s)', keyword, info)
-                        return rules[keywords].encode('utf-8')
+                        #return rules[keywords].encode('utf-8')
+                        return rules[keywords]
                     else:
                         logger.debug('[target] minfo not matched (%s:%s)', keywords, info)
 
